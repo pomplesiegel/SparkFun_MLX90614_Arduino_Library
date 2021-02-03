@@ -32,7 +32,7 @@ bool IRTherm::begin(uint8_t address, TwoWire &wirePort)
 {
 	_deviceAddress = address; // Store the address in a private member
 	_i2cPort = &wirePort;
-
+	wake(); 
 	return (isConnected());
 }
 
@@ -282,6 +282,7 @@ void IRTherm::sleep()
 	pinMode(SCL, OUTPUT);
 	digitalWrite(SCL, LOW);
 	pinMode(SDA, INPUT);
+	_i2cPort->begin(); //need to make sure we don't turn off i2c for other folks - maybe the last few lines are unnecessary
 }
 
 void IRTherm::wake()
@@ -299,6 +300,7 @@ void IRTherm::wake()
 	digitalWrite(SCL, LOW); // SCL low
 	delay(10); // Delay at least 1.44ms
 	pinMode(SCL, INPUT); // SCL high
+	_i2cPort->begin(); 
 	_i2cPort->beginTransmission(_deviceAddress); // reactivate i2c bus transmission AFTER sending wake up request
 }
 
